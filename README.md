@@ -1,0 +1,1 @@
+# cordova-nfc-acr122-plugin

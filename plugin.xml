@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="com.example.cordova.alert"
+        id="com.emisys.cordova.nfc.NfcAcr122Plugin"
         version="0.0.1">
     <name>NFC ACR122 Plugin</name>
     <description>This is an experimental project to use an external NFC reader from Android.</description>

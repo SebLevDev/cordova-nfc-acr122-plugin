@@ -7,3 +7,5 @@ It uses the [ACR122U NFC reader](http://www.acs.com.hk/en/products/3/acr122u-usb
 This is a very rough proof of concept written for a client. The NFC functions are provided by the ascsmc-1.1.1.jar.
 
 If you run the app without a reader attached, you'll get an ArrayIndexOutOfBoundsException exception.
+
+this project is a refactoring of this source code https://github.com/don/nfc-acr122

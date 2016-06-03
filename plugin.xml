@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="com.example.cordova.alert"
+        version="0.0.1">
+    <name>NFC ACR122 Plugin</name>
+    <description>This is an experimental project to use an external NFC reader from Android.</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,plugin,nfc,acr122</keywords>
+    <repo>https://github.com/Legenyes/cordova-nfc-acr122-plugin</repo>
+    <issue>https://github.com/Legenyes/cordova-nfc-acr122-plugin/issues</issue>
+ 
+    <js-module src="www/plugin.js" name="NFC ACR122">
+        <clobbers target="cordova.plugins.nfc-acr122" />
+    </js-module>
+    
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="NfcAcr122Plugin" >
+                <param name="android-package" value="com.emisys.cordova.nfc.NfcAcr122Plugin"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/NfcAcr122Plugin.java" target-dir="src/com/emisys/cordova/nfc"/>
+    </platform>
+
+</plugin>

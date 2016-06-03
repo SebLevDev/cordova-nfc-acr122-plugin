@@ -23,7 +23,6 @@ import org.json.JSONException;
 
 import java.util.Map;
 
-
 // TODO rename ACS122UPlugin or AcsNfcReaderPlugin
 // NOTE future versions could support different readers or more functions.
 // TODO properly initialize
@@ -31,8 +30,7 @@ import java.util.Map;
 // TODO what happens on pause?
 // TODO handle no reader gracefully
 // TODO handle other USB devices
-
-public class NfcAcr122Plugin extends CordovaPlugin  {
+public class NfcAcr122Plugin extends CordovaPlugin {
 
     private static final String TAG = "NfcIdPlugin";
 
@@ -69,18 +67,15 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
                     } else {
 
                         //Log.d(TAG, "Permission denied for device " + device.getDeviceName());
-
                     }
                 }
 
             } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
 
                 //Log.w(TAG, "WARNING: you need to close the reader!!!!");
-
             }
         }
     };
-
 
     private CallbackContext callback;
 
@@ -90,7 +85,6 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
         // your init code here
 
         // Log.d(TAG, "initializing...");
-
         // Get USB manager
         usbManager = (UsbManager) cordova.getActivity().getSystemService(Context.USB_SERVICE);
 
@@ -100,20 +94,19 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
             @Override
             public void onStateChange(int slotNumber, int previousState, int currentState) {
-/*
+                /*
                 Log.d(TAG, "slotNumber " + slotNumber);
                 Log.d(TAG, "previousState " + previousState);
                 Log.d(TAG, "currentState " + currentState);
                 Log.d(TAG, "");*/
 
                 if (currentState == Reader.CARD_PRESENT) {
-                   /* Log.d(TAG, "Ready to read!!!!");*/
+                    /* Log.d(TAG, "Ready to read!!!!");*/
 
                     // TODO refactor logic to getUidForConnectedCard
                     //byte[] sendBuffer = new byte[]{ (byte)0xFF, (byte)0xCA, (byte)0x0, (byte)0x0, (byte)0x4} ;
                     // length of 0 gets the whole ID!
-                	/*
-                    byte[] sendBuffer = new byte[]{ (byte)0xFF, (byte)0xCA, (byte)0x0, (byte)0x0, (byte)0x0};
+                    byte[] sendBuffer = new byte[]{(byte) 0xFF, (byte) 0xCA, (byte) 0x0, (byte) 0x0, (byte) 0x0};
                     byte[] receiveBuffer = new byte[16];
 
                     try {
@@ -121,7 +114,6 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
                         // TODO errors should have byteCount of 2
                         // TODO send some bad commands and check for the codes from the spec
-
                         for (byte b : receiveBuffer) {
                             Log.w(TAG, "byte " + b);
                         }
@@ -139,29 +131,27 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
                         // TODO plugin should just return the UID as byte[]
                         //Log.w(TAG, uid.toString());
-
                         PluginResult result = new PluginResult(PluginResult.Status.OK, uid.toString());
                         result.setKeepCallback(true);
                         callback.sendPluginResult(result);
 
                     } catch (ReaderException e) {
                         e.printStackTrace();
-                    }*/
+                    }
 
                 } else if (currentState == Reader.CARD_ABSENT && previousState == Reader.CARD_PRESENT) {
                     // this is probably OK,
                     // we'll want to do something for card lost if we were in the middle of reading
                     //Log.d(TAG, "Card Lost");
+                    PluginResult result = new PluginResult(PluginResult.Status.OK, "");
+                    result.setKeepCallback(true);
+                    callback.sendPluginResult(result);
                 }
-
 
             }
         });
-        
-        
 
         /// -----
-
         // Register receiver for USB permission
         mPermissionIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter();
@@ -171,14 +161,11 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
     }
 
-
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
 
         //Log.d(TAG, "execute " + action);
-
         // TODO call error callback if there is no reader
-
         if (action.equalsIgnoreCase(LISTEN)) {
             listen(callbackContext);
         } else {
@@ -200,8 +187,6 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 //            return STATUS_NFC_OK;
 //        }
 //    }
-
-
     private void listen(CallbackContext callbackContext) {
 
         Map<String, UsbDevice> devices = usbManager.getDeviceList();
@@ -222,8 +207,6 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 //            pendingIntent = PendingIntent.getActivity(activity, 0, intent, 0);
 //        }
 //    }
-
-
     private void startNfc() {
         //Log.d(TAG, "startNfc");
 
@@ -258,7 +241,6 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 //            }
 //        });
     }
-
 
 //    void parseMessage() {
 //        cordova.getThreadPool().execute(new Runnable() {
@@ -299,14 +281,13 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 //            }
 //        });
 //    }
-
     @Override
     public void onPause(boolean multitasking) {
         //Log.d(TAG, "onPause " + getIntent());
         super.onPause(multitasking);
         if (multitasking) {
             // nfc can't run in background
-            stopNfc();            
+            stopNfc();
         }
     }
 
@@ -325,7 +306,6 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 //        savedIntent = intent;
 //        parseMessage();
 //    }
-
     private Activity getActivity() {
         return this.cordova.getActivity();
     }

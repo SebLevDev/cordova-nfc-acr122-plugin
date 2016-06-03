@@ -131,10 +131,12 @@ public class NfcAcr122Plugin extends CordovaPlugin {
 
                         // TODO plugin should just return the UID as byte[]
                         //Log.w(TAG, uid.toString());
-                        PluginResult result = new PluginResult(PluginResult.Status.OK, uid.toString());
+*/
+                        //PluginResult result = new PluginResult(PluginResult.Status.OK, uid.toString());
+                        PluginResult result = new PluginResult(PluginResult.Status.OK, "TEST");
                         result.setKeepCallback(true);
                         callback.sendPluginResult(result);
-                        */
+                        
 
                     } catch (ReaderException e) {
                         e.printStackTrace();

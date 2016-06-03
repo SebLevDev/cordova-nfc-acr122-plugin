@@ -8,4 +8,4 @@ This is a very rough proof of concept written for a client. The NFC functions ar
 
 If you run the app without a reader attached, you'll get an ArrayIndexOutOfBoundsException exception.
 
-this project is a refactoring of this source code https://github.com/don/nfc-acr122
+This project is a refactoring of this source code https://github.com/don/nfc-acr122

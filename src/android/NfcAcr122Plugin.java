@@ -36,6 +36,9 @@ public class NfcAcr122Plugin extends CordovaPlugin {
 
     private static final String LISTEN = "listen";
 
+    private static final String[] stateStrings = { "Unknown", "Absent",
+            "Present", "Swallowed", "Powered", "Negotiable", "Specific" };
+
     private UsbManager usbManager;
     private UsbDevice usbDevice;
 
@@ -100,8 +103,27 @@ public class NfcAcr122Plugin extends CordovaPlugin {
                 Log.d(TAG, "currentState " + currentState);
                 Log.d(TAG, "");*/
 
+                if (previousState < Reader.CARD_UNKNOWN
+                        || previousState > Reader.CARD_SPECIFIC) {
+                    previousState = Reader.CARD_UNKNOWN;
+                }
+
+                if (currentState < Reader.CARD_UNKNOWN
+                        || currentState > Reader.CARD_SPECIFIC) {
+                    currentState = Reader.CARD_UNKNOWN;
+                }
+
+                // Create output string
+                final String outputString = "--> "
+                        + stateStrings[previousState] + " -> "
+                        + stateStrings[currentState];
+                
+                PluginResult result = new PluginResult(PluginResult.Status.OK, outputString);
+                        result.setKeepCallback(true);
+                        callback.sendPluginResult(result);
+
+                /*
                 if (currentState == Reader.CARD_PRESENT) {
-                    /* Log.d(TAG, "Ready to read!!!!");*/
 
                     // TODO refactor logic to getUidForConnectedCard
                     //byte[] sendBuffer = new byte[]{ (byte)0xFF, (byte)0xCA, (byte)0x0, (byte)0x0, (byte)0x4} ;
@@ -110,7 +132,7 @@ public class NfcAcr122Plugin extends CordovaPlugin {
                     byte[] receiveBuffer = new byte[16];
 
                     try {
-                        int byteCount = reader.control(slotNumber, Reader.IOCTL_CCID_ESCAPE, sendBuffer, sendBuffer.length, receiveBuffer, receiveBuffer.length);
+                        //int byteCount = reader.control(slotNumber, Reader.IOCTL_CCID_ESCAPE, sendBuffer, sendBuffer.length, receiveBuffer, receiveBuffer.length);
                         /*
                         // TODO errors should have byteCount of 2
                         // TODO send some bad commands and check for the codes from the spec
@@ -131,23 +153,23 @@ public class NfcAcr122Plugin extends CordovaPlugin {
 
                         // TODO plugin should just return the UID as byte[]
                         //Log.w(TAG, uid.toString());
-*/
+                        
+                         
+
                         //PluginResult result = new PluginResult(PluginResult.Status.OK, uid.toString());
-                        PluginResult result = new PluginResult(PluginResult.Status.OK, "TEST");
+                        PluginResult result = new PluginResult(PluginResult.Status.OK, outputString);
                         result.setKeepCallback(true);
                         callback.sendPluginResult(result);
-                        
 
                     } catch (ReaderException e) {
                         e.printStackTrace();
                     }
-                
 
                 } else if (currentState == Reader.CARD_ABSENT && previousState == Reader.CARD_PRESENT) {
                     // this is probably OK,
                     // we'll want to do something for card lost if we were in the middle of reading
                     //Log.d(TAG, "Card Lost");
-                }
+                }*/
 
             }
         });

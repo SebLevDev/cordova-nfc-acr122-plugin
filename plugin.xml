@@ -10,6 +10,11 @@
     <repo>https://github.com/Legenyes/cordova-nfc-acr122-plugin</repo>
     <issue>https://github.com/Legenyes/cordova-nfc-acr122-plugin/issues</issue>
  
+    <engines>
+        <engine name="cordova-android" version=">=3.6.0" /><!-- Requires CordovaPlugin.preferences -->
+    </engines>
+
+ 
     <js-module src="www/plugin.js" name="NFC ACR122">
         <clobbers target="cordova.plugins.nfc-acr122" />
     </js-module>
@@ -22,6 +27,7 @@
         </config-file>
 
         <source-file src="src/android/NfcAcr122Plugin.java" target-dir="src/com/emisys/cordova/nfc"/>
+        <source-file src="src/android/libs/acssmc-1.1.3.jar" target-dir="libs" framework="true"/>
     </platform>
 
 </plugin>

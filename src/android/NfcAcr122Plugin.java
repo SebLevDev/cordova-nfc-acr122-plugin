@@ -102,7 +102,7 @@ public class NfcAcr122Plugin extends CordovaPlugin {
 
                 if (currentState == Reader.CARD_PRESENT) {
                     /* Log.d(TAG, "Ready to read!!!!");*/
-
+/*
                     // TODO refactor logic to getUidForConnectedCard
                     //byte[] sendBuffer = new byte[]{ (byte)0xFF, (byte)0xCA, (byte)0x0, (byte)0x0, (byte)0x4} ;
                     // length of 0 gets the whole ID!
@@ -138,14 +138,12 @@ public class NfcAcr122Plugin extends CordovaPlugin {
                     } catch (ReaderException e) {
                         e.printStackTrace();
                     }
+                */
 
                 } else if (currentState == Reader.CARD_ABSENT && previousState == Reader.CARD_PRESENT) {
                     // this is probably OK,
                     // we'll want to do something for card lost if we were in the middle of reading
                     //Log.d(TAG, "Card Lost");
-                    PluginResult result = new PluginResult(PluginResult.Status.OK, "");
-                    result.setKeepCallback(true);
-                    callback.sendPluginResult(result);
                 }
 
             }

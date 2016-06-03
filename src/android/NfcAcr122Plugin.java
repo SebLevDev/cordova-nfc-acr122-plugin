@@ -89,7 +89,7 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
         super.initialize(cordova, webView);
         // your init code here
 
-        Log.d(TAG, "initializing...");
+        // Log.d(TAG, "initializing...");
 
         // Get USB manager
         usbManager = (UsbManager) cordova.getActivity().getSystemService(Context.USB_SERVICE);
@@ -106,14 +106,13 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
                 Log.d(TAG, "currentState " + currentState);
                 Log.d(TAG, "");*/
 
-                // file:///Users/don/Downloads/ACS-Unified-LIB-Android-111-P/acssmc/doc/constant-values.html#com.acs.smartcard.Reader.CARD_SWALLOWED
-
                 if (currentState == Reader.CARD_PRESENT) {
                    /* Log.d(TAG, "Ready to read!!!!");*/
 
                     // TODO refactor logic to getUidForConnectedCard
                     //byte[] sendBuffer = new byte[]{ (byte)0xFF, (byte)0xCA, (byte)0x0, (byte)0x0, (byte)0x4} ;
                     // length of 0 gets the whole ID!
+                	/*
                     byte[] sendBuffer = new byte[]{ (byte)0xFF, (byte)0xCA, (byte)0x0, (byte)0x0, (byte)0x0};
                     byte[] receiveBuffer = new byte[16];
 
@@ -122,12 +121,10 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
                         // TODO errors should have byteCount of 2
                         // TODO send some bad commands and check for the codes from the spec
-/*
-                        Log.w(TAG, "====================");
+
                         for (byte b : receiveBuffer) {
                             Log.w(TAG, "byte " + b);
                         }
-                        Log.w(TAG, "====================");*/
 
                         //int MIFARE_CLASSIC_UID_LENGTH = 4;
                         StringBuffer uid = new StringBuffer();
@@ -146,6 +143,7 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
                         PluginResult result = new PluginResult(PluginResult.Status.OK, uid.toString());
                         result.setKeepCallback(true);
                         callback.sendPluginResult(result);
+                        */
 
                     } catch (ReaderException e) {
                         e.printStackTrace();
@@ -160,6 +158,8 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
             }
         });
+        
+        
 
         /// -----
 

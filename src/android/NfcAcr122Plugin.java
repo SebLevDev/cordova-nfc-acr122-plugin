@@ -143,11 +143,10 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
                         PluginResult result = new PluginResult(PluginResult.Status.OK, uid.toString());
                         result.setKeepCallback(true);
                         callback.sendPluginResult(result);
-                        */
 
                     } catch (ReaderException e) {
                         e.printStackTrace();
-                    }
+                    }*/
 
                 } else if (currentState == Reader.CARD_ABSENT && previousState == Reader.CARD_PRESENT) {
                     // this is probably OK,

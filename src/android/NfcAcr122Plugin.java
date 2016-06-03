@@ -68,14 +68,14 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
                     } else {
 
-                        Log.d(TAG, "Permission denied for device " + device.getDeviceName());
+                        //Log.d(TAG, "Permission denied for device " + device.getDeviceName());
 
                     }
                 }
 
             } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
 
-                Log.w(TAG, "WARNING: you need to close the reader!!!!");
+                //Log.w(TAG, "WARNING: you need to close the reader!!!!");
 
             }
         }
@@ -100,16 +100,16 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
             @Override
             public void onStateChange(int slotNumber, int previousState, int currentState) {
-
+/*
                 Log.d(TAG, "slotNumber " + slotNumber);
                 Log.d(TAG, "previousState " + previousState);
                 Log.d(TAG, "currentState " + currentState);
-                Log.d(TAG, "");
+                Log.d(TAG, "");*/
 
                 // file:///Users/don/Downloads/ACS-Unified-LIB-Android-111-P/acssmc/doc/constant-values.html#com.acs.smartcard.Reader.CARD_SWALLOWED
 
                 if (currentState == Reader.CARD_PRESENT) {
-                    Log.d(TAG, "Ready to read!!!!");
+                   /* Log.d(TAG, "Ready to read!!!!");*/
 
                     // TODO refactor logic to getUidForConnectedCard
                     //byte[] sendBuffer = new byte[]{ (byte)0xFF, (byte)0xCA, (byte)0x0, (byte)0x0, (byte)0x4} ;
@@ -122,12 +122,12 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
                         // TODO errors should have byteCount of 2
                         // TODO send some bad commands and check for the codes from the spec
-
+/*
                         Log.w(TAG, "====================");
                         for (byte b : receiveBuffer) {
                             Log.w(TAG, "byte " + b);
                         }
-                        Log.w(TAG, "====================");
+                        Log.w(TAG, "====================");*/
 
                         //int MIFARE_CLASSIC_UID_LENGTH = 4;
                         StringBuffer uid = new StringBuffer();
@@ -137,11 +137,11 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
                             if (i < byteCount - 3) {
                                 uid.append(":");
                             }
-                            Log.w(TAG, String.format("%02X ", receiveBuffer[i]));
+                            //Log.w(TAG, String.format("%02X ", receiveBuffer[i]));
                         }
 
                         // TODO plugin should just return the UID as byte[]
-                        Log.w(TAG, uid.toString());
+                        //Log.w(TAG, uid.toString());
 
                         PluginResult result = new PluginResult(PluginResult.Status.OK, uid.toString());
                         result.setKeepCallback(true);
@@ -154,7 +154,7 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
                 } else if (currentState == Reader.CARD_ABSENT && previousState == Reader.CARD_PRESENT) {
                     // this is probably OK,
                     // we'll want to do something for card lost if we were in the middle of reading
-                    Log.d(TAG, "Card Lost");
+                    //Log.d(TAG, "Card Lost");
                 }
 
 
@@ -176,7 +176,7 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
     @Override
     public boolean execute(String action, JSONArray data, CallbackContext callbackContext) throws JSONException {
 
-        Log.d(TAG, "execute " + action);
+        //Log.d(TAG, "execute " + action);
 
         // TODO call error callback if there is no reader
 
@@ -226,7 +226,7 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
 
     private void startNfc() {
-        Log.d(TAG, "startNfc");
+        //Log.d(TAG, "startNfc");
 
 //        createPendingIntent(); // onResume can call startNfc before execute
 //
@@ -247,7 +247,7 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
     }
 
     private void stopNfc() {
-        Log.d(TAG, "stopNfc");
+        //Log.d(TAG, "stopNfc");
 //        getActivity().runOnUiThread(new Runnable() {
 //            public void run() {
 //
@@ -303,7 +303,7 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
     @Override
     public void onPause(boolean multitasking) {
-        Log.d(TAG, "onPause " + getIntent());
+        //Log.d(TAG, "onPause " + getIntent());
         super.onPause(multitasking);
         if (multitasking) {
             // nfc can't run in background
@@ -313,7 +313,7 @@ public class NfcAcr122Plugin extends CordovaPlugin  {
 
     @Override
     public void onResume(boolean multitasking) {
-        Log.d(TAG, "onResume " + getIntent());
+        //Log.d(TAG, "onResume " + getIntent());
         super.onResume(multitasking);
         startNfc();
     }

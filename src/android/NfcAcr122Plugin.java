@@ -35,9 +35,12 @@ public class NfcAcr122Plugin extends CordovaPlugin {
     private static final String TAG = "NfcIdPlugin";
 
     private static final String LISTEN = "listen";
+    private static final String STARTNFC = "startNfc";
+    private static final String STOPNFC = "stopNfc";
+    private static final String LCDMESSAGE = "lcdmessage";
 
-    private static final String[] stateStrings = { "Unknown", "Absent",
-            "Present", "Swallowed", "Powered", "Negotiable", "Specific" };
+    private static final String[] stateStrings = {"Unknown", "Absent",
+        "Present", "Swallowed", "Powered", "Negotiable", "Specific"};
 
     private UsbManager usbManager;
     private UsbDevice usbDevice;
@@ -80,6 +83,25 @@ public class NfcAcr122Plugin extends CordovaPlugin {
         }
     };
 
+    private void lcd_setMessage(JSONArray data) {
+        /*  byte option = 0x00;
+        byte position = 0x00; // 0x60;
+
+        String message = "emisys";
+        
+        char[] data = new char[16];
+        // The first character will not be displayed on the LCD screen :(
+        data = message.toCharArray();
+
+        byte[] sendBuffer = new byte[]{(byte) 0xFF, option, (byte) 0x68, position, data};
+        byte[] receiveBuffer = new byte[16];
+        try {
+            int byteCount = reader.transmit(0, sendBuffer, sendBuffer.length, receiveBuffer, receiveBuffer.length);
+        } catch (ReaderException e) {
+            e.printStackTrace();
+        }*/
+    }
+
     private CallbackContext callback;
 
     @Override
@@ -93,15 +115,19 @@ public class NfcAcr122Plugin extends CordovaPlugin {
 
         // Initialize reader
         reader = new Reader(usbManager);
+        /*
+        for (UsbDevice device : usbManager.getDeviceList().values()) {
+            if (reader.isSupported(device)) {
+                reader = new Reader(usbManager);
+                usbManager.requestPermission(device, mPermissionIntent);
+            }
+        }
+         */
+
         reader.setOnStateChangeListener(new Reader.OnStateChangeListener() {
 
             @Override
             public void onStateChange(int slotNumber, int previousState, int currentState) {
-                /*
-                Log.d(TAG, "slotNumber " + slotNumber);
-                Log.d(TAG, "previousState " + previousState);
-                Log.d(TAG, "currentState " + currentState);
-                Log.d(TAG, "");*/
 
                 if (previousState < Reader.CARD_UNKNOWN
                         || previousState > Reader.CARD_SPECIFIC) {
@@ -114,33 +140,14 @@ public class NfcAcr122Plugin extends CordovaPlugin {
                 }
 
                 // Create output string
-                final String outputString = "--> "
-                        + stateStrings[previousState] + " -> "
-                        + stateStrings[currentState];
-                
-                PluginResult result = new PluginResult(PluginResult.Status.OK, outputString);
-                        result.setKeepCallback(true);
-                        callback.sendPluginResult(result);
+                String outputString = stateStrings[currentState];
 
-                /*
                 if (currentState == Reader.CARD_PRESENT) {
-
-                    // TODO refactor logic to getUidForConnectedCard
-                    //byte[] sendBuffer = new byte[]{ (byte)0xFF, (byte)0xCA, (byte)0x0, (byte)0x0, (byte)0x4} ;
-                    // length of 0 gets the whole ID!
                     byte[] sendBuffer = new byte[]{(byte) 0xFF, (byte) 0xCA, (byte) 0x0, (byte) 0x0, (byte) 0x0};
                     byte[] receiveBuffer = new byte[16];
-
                     try {
-                        //int byteCount = reader.control(slotNumber, Reader.IOCTL_CCID_ESCAPE, sendBuffer, sendBuffer.length, receiveBuffer, receiveBuffer.length);
-                        /*
-                        // TODO errors should have byteCount of 2
-                        // TODO send some bad commands and check for the codes from the spec
-                        for (byte b : receiveBuffer) {
-                            Log.w(TAG, "byte " + b);
-                        }
+                        int byteCount = reader.control(slotNumber, Reader.IOCTL_CCID_ESCAPE, sendBuffer, sendBuffer.length, receiveBuffer, receiveBuffer.length);
 
-                        //int MIFARE_CLASSIC_UID_LENGTH = 4;
                         StringBuffer uid = new StringBuffer();
                         for (int i = 0; i < (byteCount - 2); i++) {
 
@@ -148,29 +155,18 @@ public class NfcAcr122Plugin extends CordovaPlugin {
                             if (i < byteCount - 3) {
                                 uid.append(":");
                             }
-                            //Log.w(TAG, String.format("%02X ", receiveBuffer[i]));
+                            outputString = uid.toString();
                         }
-
-                        // TODO plugin should just return the UID as byte[]
-                        //Log.w(TAG, uid.toString());
-                        
-                         
-
-                        //PluginResult result = new PluginResult(PluginResult.Status.OK, uid.toString());
-                        PluginResult result = new PluginResult(PluginResult.Status.OK, outputString);
-                        result.setKeepCallback(true);
-                        callback.sendPluginResult(result);
 
                     } catch (ReaderException e) {
                         e.printStackTrace();
                     }
 
-                } else if (currentState == Reader.CARD_ABSENT && previousState == Reader.CARD_PRESENT) {
-                    // this is probably OK,
-                    // we'll want to do something for card lost if we were in the middle of reading
-                    //Log.d(TAG, "Card Lost");
-                }*/
+                }
 
+                PluginResult result = new PluginResult(PluginResult.Status.OK, outputString);
+                result.setKeepCallback(true);
+                callback.sendPluginResult(result);
             }
         });
 
@@ -191,6 +187,12 @@ public class NfcAcr122Plugin extends CordovaPlugin {
         // TODO call error callback if there is no reader
         if (action.equalsIgnoreCase(LISTEN)) {
             listen(callbackContext);
+        } else if (action.equalsIgnoreCase(STARTNFC)) {
+            startNfc();
+        } else if (action.equalsIgnoreCase(STOPNFC)) {
+            stopNfc();
+        } else if (action.equalsIgnoreCase(LCDMESSAGE)) {
+            lcd_setMessage(data);
         } else {
             // invalid action
             return false;
@@ -222,47 +224,58 @@ public class NfcAcr122Plugin extends CordovaPlugin {
         callbackContext.sendPluginResult(result);
     }
 
-//    private void createPendingIntent() {
-//        if (pendingIntent == null) {
-//            Activity activity = getActivity();
-//            Intent intent = new Intent(activity, activity.getClass());
-//            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//            pendingIntent = PendingIntent.getActivity(activity, 0, intent, 0);
-//        }
-//    }
+    /*
+    private void createPendingIntent() {
+        if (pendingIntent == null) {
+            Activity activity = getActivity();
+            Intent intent = new Intent(activity, activity.getClass());
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            pendingIntent = PendingIntent.getActivity(activity, 0, intent, 0);
+        }
+    }
+     */
     private void startNfc() {
         //Log.d(TAG, "startNfc");
+        if (usbDevice != null) {
+            reader.open(usbDevice);
+        }
+        
+        /*
+        createPendingIntent(); // onResume can call startNfc before execute
 
-//        createPendingIntent(); // onResume can call startNfc before execute
-//
-//        getActivity().runOnUiThread(new Runnable() {
-//            public void run() {
-//                NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-//
-//                if (nfcAdapter != null && !getActivity().isFinishing()) {
-//                    nfcAdapter.enableForegroundDispatch(getActivity(), getPendingIntent(), getIntentFilters(), getTechLists());
-//
-//                    if (p2pMessage != null) {
-//                        nfcAdapter.setNdefPushMessage(p2pMessage, getActivity());
-//                    }
-//
-//                }
-//            }
-//        });
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+
+                if (nfcAdapter != null && !getActivity().isFinishing()) {
+                    nfcAdapter.enableForegroundDispatch(getActivity(), getPendingIntent(), getIntentFilters(), getTechLists());
+
+                    if (p2pMessage != null) {
+                        nfcAdapter.setNdefPushMessage(p2pMessage, getActivity());
+                    }
+
+                }
+            }
+        });*/
     }
 
     private void stopNfc() {
         //Log.d(TAG, "stopNfc");
-//        getActivity().runOnUiThread(new Runnable() {
-//            public void run() {
-//
-//                NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
-//
-//                if (nfcAdapter != null) {
-//                    nfcAdapter.disableForegroundDispatch(getActivity());
-//                }
-//            }
-//        });
+        
+        if (usbDevice != null) {
+            reader.close();
+        }
+        
+        /*getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+
+                NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
+
+                if (nfcAdapter != null) {
+                    nfcAdapter.disableForegroundDispatch(getActivity());
+                }
+            }
+        });*/
     }
 
 //    void parseMessage() {
